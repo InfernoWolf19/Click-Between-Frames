@@ -12,42 +12,33 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - name: Windows
-            os: windows-latest
-            sdk: 'v3.0.0-alpha.2'
-            cli: 'v3.0.0-beta.1'
-            combine: true
-            target: ''
+        - name: Windows
+          os: windows-latest
 
-        # Add other configurations for different platforms if needed
+        #- name: macOS
+        #  os: macos-latest
+
+        #- name: Android32
+        #  os: ubuntu-latest
+        #  target: Android32
+
+        #- name: Android64
+        #  os: ubuntu-latest
+        #  target: Android64
 
     name: ${{ matrix.config.name }}
     runs-on: ${{ matrix.config.os }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      # Clone CustomKeybindsTest repository
-      - name: Clone CustomKeybindsTest
-        run: git clone https://github.com/InfernoWolf19/CustomKeybindsTest.git
-
-      # Build CustomKeybindsTest
-      - name: Build CustomKeybindsTest
-        run: |
-          cd CustomKeybindsTest
-          mkdir build
-          cd build
-          cmake ..
-          cmake --build .
-
-      # Build ClickBetweenFrames
-      - name: Build ClickBetweenFrames
-        run: |
-          cd ..
-          mkdir build_ClickBetweenFrames
-          cd build_ClickBetweenFrames
-          cmake ..
-          cmake --build .
+      - name: Build the mod
+        uses: geode-sdk/build-geode-mod@main
+        with:
+          sdk: 'v3.0.0-alpha.2'
+          cli: 'v3.0.0-beta.1'
+          combine: true
+          target: ${{ matrix.config.target }}
 
   package:
     name: Package builds
@@ -55,12 +46,10 @@ jobs:
     needs: ['build']
 
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: geode-sdk/build-geode-mod/combine@main
+        id: build
+
+      - uses: actions/upload-artifact@v4
         with:
           name: Build Output
-          path: ${{ github.workspace }}/build_ClickBetweenFrames
-
-      - uses: actions/upload-artifact@v2
-        with:
-          name: Packaged Build
-          path: ${{ github.workspace }}/build_ClickBetweenFrames
+          path: ${{ steps.build.outputs.build-output }}
