@@ -6,7 +6,8 @@
 #include <Geode/modify/PlayLayer.hpp>
 #include <Geode/modify/CCEGLView.hpp>
 #include <Geode/modify/GJBaseGameLayer.hpp>
-#include <geode.custom-keybinds/include/Keybinds.hpp>
+#include "CustomKeybindsTest/include/keybind.hpp"
+
 
 using namespace geode::prelude;
 
